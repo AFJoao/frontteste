@@ -221,13 +221,6 @@ const AdminDashboard = () => {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => navigate(`/admin/veiculo/editar/${vehicle.id}`)}
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
                                 onClick={() => handleDeleteVehicle(vehicle.id, `${vehicle.marca} ${vehicle.modelo}`)}
                                 className="text-destructive hover:text-destructive"
                               >

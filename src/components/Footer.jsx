@@ -24,8 +24,6 @@ const Footer = () => {
             <ul className="space-y-2 text-gray-400">
               <li><a href="#veiculos" className="hover:text-primary transition-colors">Nossos Veículos</a></li>
               <li><a href="#sobre" className="hover:text-primary transition-colors">Sobre Nós</a></li>
-              <li><a href="#financiamento" className="hover:text-primary transition-colors">Financiamento</a></li>
-              <li><a href="#garantia" className="hover:text-primary transition-colors">Garantia</a></li>
             </ul>
           </div>
 

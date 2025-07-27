@@ -208,7 +208,7 @@ const VehicleDetailsPage = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     onClick={handleWhatsAppClick}
-                    className="whatsapp-btn text-white flex items-center justify-center gap-2 flex-1"
+                    className="whatsapp-btn text-white flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3"
                     size="lg"
                   >
                     <MessageCircle className="w-5 h-5" />
@@ -217,7 +217,7 @@ const VehicleDetailsPage = () => {
                   <Button
                     onClick={handleCallClick}
                     variant="outline"
-                    className="flex items-center justify-center gap-2 flex-1"
+                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3"
                     size="lg"
                   >
                     <Phone className="w-5 h-5" />

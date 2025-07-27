@@ -43,6 +43,17 @@ const Header = () => {
             <div className="bg-primary p-2 rounded-lg">
               <Car className="w-8 h-8 text-primary-foreground" />
             </div>
+            {/* 
+            // CÓDIGO PARA USAR LOGO PNG - DESCOMENTE PARA ATIVAR
+            // Substitua o caminho '/logo.png' pelo caminho correto da sua logo
+            <div>
+              <img 
+                src="/logo.png" 
+                alt="ALECAR Multimarcas" 
+                className="h-12 w-auto"
+              />
+            </div>
+            */}
             <div>
               <h1 className="text-2xl font-bold text-foreground">ALECAR</h1>
               <p className="text-sm text-muted-foreground">Multimarcas</p>
