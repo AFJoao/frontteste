@@ -38,6 +38,7 @@ const VehicleCard = ({ vehicle }) => {
             src={vehicle.imagens[0]}
             alt={`${vehicle.marca} ${vehicle.modelo}`}
             className="w-full h-48 object-cover"
+            onClick={handleDetailsClick}
           />
           <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold">
             {vehicle.categoria}
