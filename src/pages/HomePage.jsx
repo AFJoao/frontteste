@@ -70,7 +70,6 @@ const HomePage = () => {
                 </Button>
                 <Button
                   size="lg"
-                  variant="outline"
                   className="bg-white text-black hover:bg-gray-200 px-8 py-3 text-lg font-semibold"
                   onClick={() => window.open('https://wa.me/5511999999999', '_blank')}
                 >
