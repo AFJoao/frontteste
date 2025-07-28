@@ -22,10 +22,26 @@ import {
 const VehicleDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getVehicleById } = useVehicles();
+  const { getVehicleById, loading } = useVehicles();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const vehicle = getVehicleById(id);
+
+  // Mostrar loading enquanto carrega os dados
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+          <h1 className="text-xl font-medium text-foreground mt-4">Carregando veículo...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!vehicle) {
     return (
@@ -208,7 +224,7 @@ const VehicleDetailsPage = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     onClick={handleWhatsAppClick}
-                    className="whatsapp-btn text-white flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3"
+                    className="whatsapp-btn text-white flex items-center justify-center gap-2 flex-1"
                     size="lg"
                   >
                     <MessageCircle className="w-5 h-5" />
@@ -217,7 +233,7 @@ const VehicleDetailsPage = () => {
                   <Button
                     onClick={handleCallClick}
                     variant="outline"
-                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3"
+                    className="flex items-center justify-center gap-2 flex-1"
                     size="lg"
                   >
                     <Phone className="w-5 h-5" />

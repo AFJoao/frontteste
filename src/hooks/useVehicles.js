@@ -29,6 +29,8 @@ export const useVehicles = () => {
   const addVehicle = async (vehicleData) => {
     try {
       const response = await API.post('/vehicles', vehicleData);
+      // Aguardar um pouco para garantir que o produto foi persistido no banco
+      await new Promise(resolve => setTimeout(resolve, 500));
       await fetchVehicles(); // Atualiza após criar
       return response.data.vehicle;
     } catch (error) {
@@ -41,6 +43,8 @@ export const useVehicles = () => {
   const updateVehicle = async (id, updatedData) => {
     try {
       await API.put(`/vehicles/${id}`, updatedData);
+      // Aguardar um pouco para garantir que a atualização foi persistida
+      await new Promise(resolve => setTimeout(resolve, 300));
       await fetchVehicles();
     } catch (error) {
       console.error('Erro ao atualizar veículo:', error);
@@ -52,6 +56,8 @@ export const useVehicles = () => {
   const deleteVehicle = async (id) => {
     try {
       await API.delete(`/vehicles/${id}`);
+      // Aguardar um pouco para garantir que a exclusão foi persistida
+      await new Promise(resolve => setTimeout(resolve, 300));
       await fetchVehicles();
     } catch (error) {
       console.error('Erro ao excluir veículo:', error);

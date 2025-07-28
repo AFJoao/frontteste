@@ -24,13 +24,16 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const success = login(email, password);
+      const success = await login(email, password); // Aguardar a resposta da API
       if (success) {
         toast({
           title: 'Login realizado com sucesso!',
           description: 'Redirecionando para o dashboard...',
         });
-        navigate('/admin/dashboard');
+        // Aguardar um pouco para garantir que o token foi salvo
+        setTimeout(() => {
+          navigate('/admin/dashboard');
+        }, 100);
       } else {
         toast({
           title: 'Erro no login',
