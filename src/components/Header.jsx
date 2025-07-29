@@ -14,7 +14,7 @@ const Header = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <Phone className="w-4 h-4" />
-                <span>(55) 99698-0476 </span>
+                <span>(55) 99698-0000 </span>
               </div>
               <div className="hidden sm:flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
@@ -49,14 +49,14 @@ const Header = () => {
             <div>
               <img 
                 src="/logo.png" 
-                alt="ALECAR Multimarcas" 
+                alt="AutoPrime Concessionária" 
                 className="h-12 w-auto"
               />
             </div>
             */}
             <div>
-              <h1 className="text-2xl font-bold text-foreground">ALECAR</h1>
-              <p className="text-sm text-muted-foreground">Multimarcas</p>
+              <h1 className="text-2xl font-bold text-foreground">AutoPrime</h1>
+              <p className="text-sm text-muted-foreground">Concessionária</p>
             </div>
           </motion.div>
 

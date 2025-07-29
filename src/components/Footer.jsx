@@ -11,11 +11,11 @@ const Footer = () => {
                 <Car className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <span className="text-xl font-bold text-white">ALECAR</span>
-                <p className="text-sm text-gray-400">Multimarcas</p>
+                <span className="text-xl font-bold text-white">AutoPrime</span>
+                <p className="text-sm text-gray-400">Concessionária</p>
               </div>
             </div>
-            <p className="text-gray-400 text-sm">Há mais de 3 anos oferecendo os melhores veículos com qualidade, confiança e excelente atendimento.</p>
+            <p className="text-gray-400 text-sm">Há mais de 20 anos oferecendo os melhores veículos com qualidade, confiança e excelente atendimento.</p>
           </div>
 
           {/* Links rápidos */}
@@ -37,7 +37,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>contato@alecar.com</span>
+                <span>contato@autoprime.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" />
