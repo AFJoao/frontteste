@@ -33,7 +33,7 @@ const Footer = () => {
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>(55) 99698-0476 </span>
+                <span>(55) 99698-0000 </span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-primary" />
@@ -41,7 +41,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>R. Duque de Caxias, 471 - Horizontina, RS</span>
+                <span>R. Aleatória, 369 - Horizontina, RS</span>
               </li>
             </ul>
           </div>
