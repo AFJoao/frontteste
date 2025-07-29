@@ -28,7 +28,7 @@ const Footer = () => {
           </div>
 
           {/* Contato */}
-          <div id='contatos'>
+          <div>
             <span className="text-lg font-semibold mb-4 block text-white">Contato</span>
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-center gap-2">

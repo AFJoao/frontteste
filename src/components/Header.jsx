@@ -68,7 +68,7 @@ const Header = () => {
               <a href="#sobre" className="text-foreground/80 hover:text-primary transition-colors">
                 Sobre
               </a>
-              <a href="#contato" className="text-foreground/80 hover:text-primary transition-colors">
+              <a href="#contato" className="text-foreground/80 hover:text-primary transition-colors" onClick={() => window.open('https://wa.me/5511999999999', '_blank')}>
                 Contato
               </a>
               <Button onClick={() => navigate('/admin/login')} variant="outline" size="sm">
