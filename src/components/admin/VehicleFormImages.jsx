@@ -8,7 +8,7 @@ const VehicleFormImages = ({ formData, setFormData }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
 
   const handleFileChange = (index, file) => {
-    if (file && file.type.startsWith('image/')) {
+  if (file && file.type.startsWith(\'image/\') && ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const newImages = [...formData.imagens];

@@ -221,7 +221,7 @@ const VehicleDetailsPage = () => {
                   </CardContent>
                 </Card>
 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 mobile-action-buttons">
                   <Button
                     onClick={handleWhatsAppClick}
                     className="whatsapp-btn text-white flex items-center justify-center gap-2 flex-1"

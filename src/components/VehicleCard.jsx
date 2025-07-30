@@ -78,7 +78,7 @@ const VehicleCard = ({ vehicle }) => {
             {vehicle.descricao}
           </p>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mobile-action-buttons sm:flex-row">
             <Button 
               onClick={handleDetailsClick}
               variant="outline" 
@@ -88,10 +88,11 @@ const VehicleCard = ({ vehicle }) => {
             </Button>
             <Button 
               onClick={handleWhatsAppClick}
-              className="whatsapp-btn text-white flex items-center gap-2"
+              className="whatsapp-btn text-white flex items-center gap-2 flex-1 sm:flex-initial"
             >
               <MessageCircle className="w-4 h-4" />
-              WhatsApp
+              <span className="hidden sm:inline">WhatsApp</span>
+              <span className="sm:hidden">WhatsApp</span>
             </Button>
           </div>
         </CardContent>

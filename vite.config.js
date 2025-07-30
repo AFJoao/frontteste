@@ -72,28 +72,38 @@ window.onerror = (message, source, lineno, colno, errorObj) => {
 
 const configHorizonsConsoleErrroHandler = `
 const originalConsoleError = console.error;
-console.error = function(...args) {
-	originalConsoleError.apply(console, args);
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
 
-	let errorString = '';
+// Desabilitar logs em produção
+if (import.meta.env.PROD) {
+	console.log = () => {};
+	console.warn = () => {};
+	console.error = () => {};
+} else {
+	console.error = function(...args) {
+		originalConsoleError.apply(console, args);
 
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
-		if (arg instanceof Error) {
-			errorString = arg.stack || \`\${arg.name}: \${arg.message}\`;
-			break;
+		let errorString = '';
+
+		for (let i = 0; i < args.length; i++) {
+			const arg = args[i];
+			if (arg instanceof Error) {
+				errorString = arg.stack || \`\${arg.name}: \${arg.message}\`;
+				break;
+			}
 		}
-	}
 
-	if (!errorString) {
-		errorString = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
-	}
+		if (!errorString) {
+			errorString = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+		}
 
-	window.parent.postMessage({
-		type: 'horizons-console-error',
-		error: errorString
-	}, '*');
-};
+		window.parent.postMessage({
+			type: 'horizons-console-error',
+			error: errorString
+		}, '*');
+	};
+}
 `;
 
 const configWindowFetchMonkeyPatch = `
