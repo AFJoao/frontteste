@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-   const token = sessionStorage.getItem(\'token\');    if (token) {
+   const token = sessionStorage.getItem('token');
+    if (token) {
       setIsAuthenticated(true);
     }
     setLoading(false);
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       const response = await API.post('/auth/login', { email, password });
       const token = response.data.access_token;
 
-    sessionStorage.setItem(\'token\', token);
+      sessionStorage.setItem('token', token);
       setIsAuthenticated(true);
       return true;
     } catch (error) {
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-  sessionStorage.removeItem(\'token\');
+  sessionStorage.removeItem('token');
     setIsAuthenticated(false);
   };
 
