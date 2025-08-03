@@ -7,18 +7,68 @@ import VehicleCard from '@/components/VehicleCard';
 import VehicleFilters from '@/components/VehicleFilters';
 import { Button } from '@/components/ui/button';
 import { useVehicles } from '@/hooks/useVehicles';
-import { Car, Shield, Award, Users, ArrowRight } from 'lucide-react';
+import { Car, Shield, Award, Users, ArrowRight, Loader2 } from 'lucide-react';
+
+// Componente de Loading para Cards de Veículos
+const VehicleLoadingSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {[...Array(6)].map((_, index) => (
+      <div key={index} className="bg-card rounded-lg shadow-md overflow-hidden">
+        <div className="h-48 bg-muted animate-pulse"></div>
+        <div className="p-6 space-y-4">
+          <div className="space-y-2">
+            <div className="h-6 bg-muted animate-pulse rounded w-3/4"></div>
+            <div className="h-4 bg-muted animate-pulse rounded w-1/2"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-muted animate-pulse rounded w-full"></div>
+            <div className="h-4 bg-muted animate-pulse rounded w-2/3"></div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="h-6 bg-muted animate-pulse rounded w-24"></div>
+            <div className="h-10 bg-muted animate-pulse rounded w-32"></div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+// Componente de Loading Centralizado
+const CentralLoadingSpinner = () => (
+  <div className="flex items-center justify-center py-16">
+    <div className="flex flex-col items-center gap-4">
+      <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      <p className="text-lg text-muted-foreground">Carregando veículos...</p>
+    </div>
+  </div>
+);
 
 const HomePage = () => {
   const { vehicles } = useVehicles();
   const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     setFilteredVehicles(vehicles);
+    
+    // Simular loading inicial
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // Loading um pouco mais longo para a homepage
+
+    return () => clearTimeout(timer);
   }, [vehicles]);
 
   const handleFilterChange = (filtered) => {
-    setFilteredVehicles(filtered);
+    setIsFiltering(true);
+    
+    // Simular um pequeno delay no filtro para melhor UX
+    setTimeout(() => {
+      setFilteredVehicles(filtered);
+      setIsFiltering(false);
+    }, 300);
   };
 
   return (
@@ -145,12 +195,23 @@ const HomePage = () => {
               </p>
             </div>
 
-            <VehicleFilters 
-              vehicles={vehicles} 
-              onFilterChange={handleFilterChange}
-            />
+            {!isLoading && (
+              <VehicleFilters 
+                vehicles={vehicles} 
+                onFilterChange={handleFilterChange}
+              />
+            )}
 
-            {filteredVehicles.length === 0 ? (
+            {isLoading ? (
+              <VehicleLoadingSkeleton />
+            ) : isFiltering ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                  <p className="text-muted-foreground">Aplicando filtros...</p>
+                </div>
+              </div>
+            ) : filteredVehicles.length === 0 ? (
               <div className="text-center py-12">
                 <Car className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">
@@ -161,11 +222,23 @@ const HomePage = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredVehicles.map((vehicle) => (
-                  <VehicleCard key={vehicle.id} vehicle={vehicle} />
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {filteredVehicles.map((vehicle, index) => (
+                  <motion.div
+                    key={vehicle.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
+                    <VehicleCard vehicle={vehicle} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         </section>
@@ -177,3 +250,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
