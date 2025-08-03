@@ -7,22 +7,26 @@ import { Plus, X, Upload, Image } from 'lucide-react';
 const VehicleFormImages = ({ formData, setFormData }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
 
-  const handleFileChange = (index, file) => {
-  if (file && file.type.startsWith(\'image/\') && ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newImages = [...formData.imagens];
-        newImages[index] = e.target.result;
-        setFormData(prev => ({ ...prev, imagens: newImages }));
-        
-        // Armazenar o arquivo para envio ao backend
-        const newUploadedImages = [...uploadedImages];
-        newUploadedImages[index] = file;
-        setUploadedImages(newUploadedImages);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+const handleFileChange = (index, file) => {
+  if (
+    file &&
+    file.type.startsWith('image/') &&
+    ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)
+  ) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const newImages = [...formData.imagens];
+      newImages[index] = e.target.result;
+      setFormData(prev => ({ ...prev, imagens: newImages }));
+
+      // Armazenar o arquivo para envio ao backend
+      const newUploadedImages = [...uploadedImages];
+      newUploadedImages[index] = file;
+      setUploadedImages(newUploadedImages);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   const addImageField = () => {
     if (formData.imagens.length < 10) {
