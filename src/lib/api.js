@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://concessionaria-backend-k997.onrender.com/api',
 });
 
 // ⬇️ Aqui é o que está faltando: interceptador para adicionar o token JWT

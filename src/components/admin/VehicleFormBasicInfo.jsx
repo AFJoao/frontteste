@@ -40,17 +40,32 @@ const VehicleFormBasicInfo = ({ formData, handleInputChange }) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="preco">Preço (R$) *</Label>
+          <Label htmlFor="preco">Preço (R$)</Label>
           <Input
             id="preco"
             type="number"
             min="0"
             step="0.01"
             value={formData.preco}
-            onChange={(e) => handleInputChange('preco', e.target.value)}
+            onChange={(e) => handleInputChange("preco", e.target.value)}
             placeholder="Ex: 85000"
-            required
+            disabled={formData.sob_consulta}
           />
+          <div className="flex items-center space-x-2 mt-2">
+            <input
+              type="checkbox"
+              id="sob_consulta"
+              checked={formData.sob_consulta}
+              onChange={(e) => {
+                handleInputChange("sob_consulta", e.target.checked);
+                if (e.target.checked) {
+                  handleInputChange("preco", "");
+                }
+              }}
+              className="form-checkbox h-4 w-4 text-primary rounded"
+            />
+            <Label htmlFor="sob_consulta">Marcar como "Sob Consulta"</Label>
+          </div>
         </div>
       </div>
       <div className="space-y-2">

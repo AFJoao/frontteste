@@ -2,7 +2,7 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { createLogger, defineConfig } from 'vite';
 
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = false;
 
 const configHorizonsViteErrorHandler = `
 const observer = new MutationObserver((mutations) => {
@@ -76,7 +76,7 @@ const originalConsoleLog = console.log;
 const originalConsoleWarn = console.warn;
 
 // Desabilitar logs em produção
-if (import.meta.env.PROD) {
+if (false) {
 	console.log = () => {};
 	console.warn = () => {};
 	console.error = () => {};

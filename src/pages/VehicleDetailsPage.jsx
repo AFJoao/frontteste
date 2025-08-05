@@ -64,7 +64,7 @@ const VehicleDetailsPage = () => {
   };
 
   const handleWhatsAppClick = () => {
-    const message = `Olá! Tenho interesse no ${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} por ${formatPrice(vehicle.preco)}. Gostaria de agendar uma visita para conhecer o veículo.`;
+    const message = `Olá! Tenho interesse no ${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} ${vehicle.sob_consulta ? 'que está sob consulta' : `por ${formatPrice(vehicle.preco)}`}. Gostaria de agendar uma visita para conhecer o veículo.`;
     const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -152,7 +152,7 @@ const VehicleDetailsPage = () => {
                     {vehicle.marca} {vehicle.modelo}
                   </h1>
                   <p className="text-4xl font-bold text-primary mb-4">
-                    {formatPrice(vehicle.preco)}
+                    {vehicle.sob_consulta ? "Sob Consulta" : formatPrice(vehicle.preco)}
                   </p>
                 </div>
 

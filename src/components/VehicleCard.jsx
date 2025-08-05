@@ -16,7 +16,7 @@ const VehicleCard = ({ vehicle }) => {
   };
 
   const handleWhatsAppClick = () => {
-    const message = `Olá! Tenho interesse no ${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} por ${formatPrice(vehicle.preco)}. Gostaria de mais informações.`;
+    const message = `Olá! Tenho interesse no ${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} ${vehicle.sob_consulta ? 'que está sob consulta' : `por ${formatPrice(vehicle.preco)}`}. Gostaria de mais informações.`;
     const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -51,7 +51,7 @@ const VehicleCard = ({ vehicle }) => {
               {vehicle.marca} {vehicle.modelo}
             </h3>
             <p className="text-2xl font-bold text-primary">
-              {formatPrice(vehicle.preco)}
+              {vehicle.sob_consulta ? "Sob Consulta" : formatPrice(vehicle.preco)}
             </p>
           </div>
 

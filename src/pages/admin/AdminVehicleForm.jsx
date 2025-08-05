@@ -26,6 +26,7 @@ const AdminVehicleForm = () => {
     modelo: '',
     ano: new Date().getFullYear(),
     preco: '',
+    sob_consulta: false,
     descricao: '',
     imagens: [''],
     combustivel: 'Flex',
@@ -67,8 +68,8 @@ const AdminVehicleForm = () => {
     setLoading(true);
 
     try {
-      if (!formData.marca || !formData.modelo || !formData.preco) {
-        toast({ title: 'Campos obrigatórios', description: 'Preencha todos os campos obrigatórios.', variant: 'destructive' });
+      if (!formData.marca || !formData.modelo || (!formData.preco && !formData.sob_consulta)) {
+        toast({ title: 'Campos obrigatórios', description: 'Preencha todos os campos obrigatórios ou marque como "Sob Consulta".', variant: 'destructive' });
         setLoading(false);
         return;
       }
@@ -82,10 +83,11 @@ const AdminVehicleForm = () => {
 
       const vehicleData = {
         ...formData,
-        preco: parseFloat(formData.preco) || 0,
+        preco: formData.sob_consulta ? null : (parseFloat(formData.preco) || 0),
         ano: parseInt(formData.ano) || new Date().getFullYear(),
         quilometragem: parseInt(formData.quilometragem) || 0,
-        imagens: validImages
+        imagens: validImages,
+        sob_consulta: formData.sob_consulta
       };
 
       if (isEditing) {
