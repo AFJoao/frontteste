@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -16,7 +16,9 @@ import {
   Palette, 
   Gauge,
   Shield,
-  Phone
+  Phone,
+  ImageOff,
+  ZoomIn
 } from 'lucide-react';
 
 const VehicleDetailsPage = () => {
@@ -24,6 +26,8 @@ const VehicleDetailsPage = () => {
   const navigate = useNavigate();
   const { getVehicleById, loading } = useVehicles();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageError, setImageError] = useState({});
+  const [showImageModal, setShowImageModal] = useState(false);
   
   const vehicle = getVehicleById(id);
 
@@ -73,11 +77,56 @@ const VehicleDetailsPage = () => {
     window.open('tel:+5511999999999', '_self');
   };
 
+  // Função para obter URL de imagem com suporte a CDN
+  const getImageUrl = (image, size = 'large') => {
+    if (!image) return null;
+
+    // Se for uma string simples (URL), usar diretamente
+    if (typeof image === 'string') {
+      // Se for do ImageKit, adicionar transformação
+      if (image.includes('ik.imagekit.io')) {
+        const transformations = {
+          thumbnail: 'tr=w-300,h-200,c-maintain_ratio,f-webp',
+          medium: 'tr=w-800,h-600,c-maintain_ratio,f-webp',
+          large: 'tr=w-1200,h-800,c-maintain_ratio,f-webp',
+          original: ''
+        };
+        const transform = transformations[size] || transformations.large;
+        return transform ? `${image}?${transform}` : image;
+      }
+      return image;
+    }
+
+    // Se for um objeto com URLs (do CDN), usar a versão apropriada
+    if (typeof image === 'object' && image.urls) {
+      const sizeMap = {
+        thumbnail: image.urls.webp_thumbnail || image.urls.thumbnail,
+        medium: image.urls.webp_medium || image.urls.medium,
+        large: image.urls.original,
+        original: image.urls.original
+      };
+      return sizeMap[size] || image.urls.original;
+    }
+
+    return image;
+  };
+
+  const handleImageError = (index) => {
+    setImageError(prev => ({ ...prev, [index]: true }));
+  };
+
+  const currentImage = vehicle.imagens?.[currentImageIndex];
+  const currentImageUrl = getImageUrl(currentImage, 'large');
+  const currentThumbnailUrl = getImageUrl(currentImage, 'medium');
+
   return (
     <>
       <Helmet>
         <title>{`${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} - AutoPrime`}</title>
-        <meta name="description" content={`${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} por ${formatPrice(vehicle.preco)}. ${vehicle.descricao}`} />
+        <meta name="description" content={`${vehicle.marca} ${vehicle.modelo} ${vehicle.ano} ${vehicle.sob_consulta ? 'sob consulta' : `por ${formatPrice(vehicle.preco)}`}. ${vehicle.descricao}`} />
+        <meta property="og:title" content={`${vehicle.marca} ${vehicle.modelo} ${vehicle.ano}`} />
+        <meta property="og:description" content={vehicle.descricao} />
+        {currentImageUrl && <meta property="og:image" content={currentImageUrl} />}
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -94,43 +143,75 @@ const VehicleDetailsPage = () => {
           </Button>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Galeria de Imagens */}
             <div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="mb-4"
+                className="mb-4 relative"
               >
-                <img
-                  src={vehicle.imagens[currentImageIndex]}
-                  alt={`${vehicle.marca} ${vehicle.modelo} - Imagem ${currentImageIndex + 1}`}
-                  className="w-full h-96 object-cover rounded-lg shadow-lg"
-                />
+                {currentImageUrl && !imageError[currentImageIndex] ? (
+                  <div className="relative group">
+                    <img
+                      src={currentThumbnailUrl || currentImageUrl}
+                      alt={`${vehicle.marca} ${vehicle.modelo} - Imagem ${currentImageIndex + 1}`}
+                      className="w-full h-96 object-cover rounded-lg shadow-lg cursor-pointer transition-transform hover:scale-[1.02]"
+                      onError={() => handleImageError(currentImageIndex)}
+                      onClick={() => setShowImageModal(true)}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
+                      <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg">
+                    <div className="text-center text-gray-500">
+                      <ImageOff className="w-16 h-16 mx-auto mb-4" />
+                      <p className="text-lg">Imagem não disponível</p>
+                    </div>
+                  </div>
+                )}
               </motion.div>
 
-              {vehicle.imagens.length > 1 && (
+              {/* Miniaturas */}
+              {vehicle.imagens && vehicle.imagens.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                  {vehicle.imagens.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImageIndex === index 
-                          ? 'border-primary ring-2 ring-primary/30' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`Miniatura ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+                  {vehicle.imagens.map((image, index) => {
+                    const thumbnailUrl = getImageUrl(image, 'thumbnail');
+                    
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                          currentImageIndex === index 
+                            ? 'border-primary ring-2 ring-primary/30' 
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        {thumbnailUrl && !imageError[index] ? (
+                          <img
+                            src={thumbnailUrl}
+                            alt={`Miniatura ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={() => handleImageError(index)}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <ImageOff className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
+            {/* Informações do Veículo */}
             <div>
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -158,79 +239,70 @@ const VehicleDetailsPage = () => {
 
                 <Card className="mb-6">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-4">
-                      Especificações Técnicas
-                    </h3>
+                    <h3 className="text-lg font-semibold mb-4">Especificações</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm text-muted-foreground">Ano</p>
-                          <p className="font-semibold text-foreground">{vehicle.ano}</p>
+                          <p className="font-semibold">{vehicle.ano}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Fuel className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm text-muted-foreground">Combustível</p>
-                          <p className="font-semibold text-foreground">{vehicle.combustivel}</p>
+                          <p className="font-semibold">{vehicle.combustivel}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Settings className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm text-muted-foreground">Câmbio</p>
-                          <p className="font-semibold text-foreground">{vehicle.cambio}</p>
+                          <p className="font-semibold">{vehicle.cambio}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Palette className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm text-muted-foreground">Cor</p>
-                          <p className="font-semibold text-foreground">{vehicle.cor}</p>
+                          <p className="font-semibold">{vehicle.cor}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Gauge className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Quilometragem</p>
-                          <p className="font-semibold text-foreground">
-                            {vehicle.quilometragem === 0 ? '0 KM' : `${vehicle.quilometragem.toLocaleString()} km`}
-                          </p>
+                      {vehicle.quilometragem > 0 && (
+                        <div className="flex items-center gap-3 col-span-2">
+                          <Gauge className="w-5 h-5 text-primary" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Quilometragem</p>
+                            <p className="font-semibold">{vehicle.quilometragem.toLocaleString('pt-BR')} km</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Shield className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Garantia</p>
-                          <p className="font-semibold text-foreground">12 meses</p>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="mb-6">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-4">
-                      Descrição
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {vehicle.descricao}
-                    </p>
-                  </CardContent>
-                </Card>
+                {vehicle.descricao && (
+                  <Card className="mb-6">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold mb-4">Descrição</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {vehicle.descricao}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
 
-                <div className="flex flex-col sm:flex-row gap-4 mobile-action-buttons">
-                  <Button
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
                     onClick={handleWhatsAppClick}
                     className="whatsapp-btn text-white flex items-center justify-center gap-2 flex-1"
                     size="lg"
                   >
                     <MessageCircle className="w-5 h-5" />
-                    Falar no WhatsApp
+                    Conversar no WhatsApp
                   </Button>
-                  <Button
+                  <Button 
                     onClick={handleCallClick}
                     variant="outline"
                     className="flex items-center justify-center gap-2 flex-1"
@@ -240,6 +312,17 @@ const VehicleDetailsPage = () => {
                     Ligar Agora
                   </Button>
                 </div>
+
+                <div className="mt-6 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="w-5 h-5 text-primary" />
+                    <span className="font-semibold">Garantia e Segurança</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Todos os nossos veículos passam por rigorosa inspeção técnica. 
+                    Oferecemos garantia e suporte completo pós-venda.
+                  </p>
+                </div>
               </motion.div>
             </div>
           </div>
@@ -247,8 +330,33 @@ const VehicleDetailsPage = () => {
 
         <Footer />
       </div>
+
+      {/* Modal de Imagem Ampliada */}
+      {showImageModal && currentImageUrl && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div className="relative max-w-4xl max-h-full">
+            <img
+              src={currentImageUrl}
+              alt={`${vehicle.marca} ${vehicle.modelo} - Imagem ampliada`}
+              className="max-w-full max-h-full object-contain"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              ✕
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
 export default VehicleDetailsPage;
+

@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Calendar, Fuel, Settings, Palette } from 'lucide-react';
+import { MessageCircle, Calendar, Fuel, Settings, Palette, ImageOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const VehicleCard = ({ vehicle }) => {
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -25,6 +26,56 @@ const VehicleCard = ({ vehicle }) => {
     navigate(`/veiculo/${vehicle.id}`);
   };
 
+  // Função para obter a melhor URL de imagem
+  const getImageUrl = () => {
+    if (!vehicle.imagens || vehicle.imagens.length === 0) {
+      return null;
+    }
+
+    const firstImage = vehicle.imagens[0];
+    
+    // Se for uma string simples (URL), usar diretamente
+    if (typeof firstImage === 'string') {
+      return firstImage;
+    }
+
+    // Se for um objeto com URLs (do CDN), usar a versão medium
+    if (typeof firstImage === 'object' && firstImage.urls) {
+      return firstImage.urls.webp_medium || firstImage.urls.medium || firstImage.urls.original;
+    }
+
+    // Fallback
+    return firstImage;
+  };
+
+  // Função para obter URL de thumbnail para carregamento mais rápido
+  const getThumbnailUrl = () => {
+    if (!vehicle.imagens || vehicle.imagens.length === 0) {
+      return null;
+    }
+
+    const firstImage = vehicle.imagens[0];
+    
+    // Se for um objeto com URLs (do CDN), usar thumbnail
+    if (typeof firstImage === 'object' && firstImage.urls) {
+      return firstImage.urls.webp_thumbnail || firstImage.urls.thumbnail;
+    }
+
+    // Para URLs simples, tentar adicionar transformação do ImageKit
+    if (typeof firstImage === 'string' && firstImage.includes('ik.imagekit.io')) {
+      return `${firstImage}?tr=w-300,h-200,c-maintain_ratio,f-webp`;
+    }
+
+    return firstImage;
+  };
+
+  const imageUrl = getImageUrl();
+  const thumbnailUrl = getThumbnailUrl();
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,12 +85,26 @@ const VehicleCard = ({ vehicle }) => {
     >
       <Card className="car-card-hover overflow-hidden bg-card shadow-lg border">
         <div className="relative">
-          <img
-            src={vehicle.imagens[0]}
-            alt={`${vehicle.marca} ${vehicle.modelo}`}
-            className="w-full h-48 object-cover"
-            onClick={handleDetailsClick}
-          />
+          {imageUrl && !imageError ? (
+            <img
+              src={thumbnailUrl || imageUrl}
+              alt={`${vehicle.marca} ${vehicle.modelo}`}
+              className="w-full h-48 object-cover cursor-pointer transition-transform hover:scale-105"
+              onClick={handleDetailsClick}
+              onError={handleImageError}
+              loading="lazy"
+            />
+          ) : (
+            <div 
+              className="w-full h-48 bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors"
+              onClick={handleDetailsClick}
+            >
+              <div className="text-center text-gray-500">
+                <ImageOff className="w-12 h-12 mx-auto mb-2" />
+                <p className="text-sm">Imagem não disponível</p>
+              </div>
+            </div>
+          )}
           <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold">
             {vehicle.categoria}
           </div>
@@ -102,3 +167,4 @@ const VehicleCard = ({ vehicle }) => {
 };
 
 export default VehicleCard;
+
